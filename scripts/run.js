@@ -5,16 +5,19 @@ async function main() {
     const [owner] = await hre.ethers.getSigners();
 
     // Get contract that we want to deploy
-    const contractFactory = await hre.ethers.getContractFactory("SimpleToken");
+    const SimpleTokenFactory = await hre.ethers.getContractFactory("SimpleToken");
+    const SlientStakingFactory = await hre.ethers.getContractFactory("SilentStaking");
 
     // Deploy contract with the correct constructor arguments
-    const contract = await contractFactory.deploy();
+    const tokenContract = await SimpleTokenFactory.deploy();
+    await tokenContract.deployed();
+    const tokenAddress = tokenContract.address;
 
-    // Wait for this transaction to be mined
-    await contract.deployed();
-
+    const stakingContract = await SlientStakingFactory.deploy(tokenAddress, 10);
+    await stakingContract.deployed();
     // Get contract address
-    console.log("Contract deployed to:", contract.address);
+    console.log("Token contract deployed to:", tokenContract.address);
+    console.log("Staking contract deployed to:", stakingContract.address);
 }
 
 main()

@@ -1,19 +1,22 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { BN, expectEvent, expectRevert } = require("@openzeppelin/test-helpers");
+
+const SimpleToken = artifacts.require('SimpleToken');
+let tokenContract;
+let stakingContract;
 
 describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+    let tokenContract;
+    before(async function () {
+        const SimpleTokenFactory = await ethers.getContractFactory("SimpleToken");
+        const SlientStakingFactory = await ethers.getContractFactory("SilentStaking");
+        tokenContract = await SimpleTokenFactory.deploy();
+        await tokenContract.deployed();
+    });
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
-
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
-
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
-  });
+    it("Should return token balance of owner", async function () {
+        const [owner, addr1] = await ethers.getSigners();
+        expect(await tokenContract.balanceOf(owner.address)).to.equal("200000000000000000000000");
+    });
 });

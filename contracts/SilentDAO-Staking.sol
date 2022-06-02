@@ -178,6 +178,7 @@ contract SilentStaking is Ownable {
      * @param tier The tier to be staken
      */
     function stake(uint8 tier) public {
+        require(tier > 0, "Invalid tier");
         uint256 tokenBalanceOfUser = erc20.balanceOf(msg.sender);
         require(
             tokenBalanceOfUser > amountTiers[tier],
@@ -218,15 +219,16 @@ contract SilentStaking is Ownable {
             if (stakedByUser[i].tier == tier) {
                 require(block.timestamp - stakedByUser[i].stakedAt >= periodTiers[tier], "Staking period is not finished yet");
                 stakedByUser[i] = stakeInfo(address(0), 0, false, 0);
+
+                // Create a variable to store the total rewards for all
+                uint256 totalRewards = 0;
+
+                // rewards mechanism will be go to here
+
+                erc20.transfer(msg.sender, amountTiers[tier] * 10 ** 18);
+                // Emit event
+                emit Unstaked(msg.sender, totalRewards);
             }
         }
-        // Create a variable to store the total rewards for all
-        uint256 totalRewards = 0;
-
-        // rewards mechanism will be go to here
-
-        erc20.transfer(msg.sender, amountTiers[tier] * 10 ** 18);
-        // Emit event
-        emit Unstaked(msg.sender, totalRewards);
     }
 }
